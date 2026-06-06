@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+bcrypt
+captcha
+pillow
+prettytable
+pymssql
+reportlab
+tkcalendar
+ttkbootstrap
+matplotlib
+itsdangerous
+PyJWT
+jose
