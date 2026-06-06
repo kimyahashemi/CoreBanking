@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #059669);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-section h1 {
+            color: #1e3a8a;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .logo-section p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0f172a;
+            font-size: 24px;
+            line-height: 1.4;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        #profileButton {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        #profileButton:hover {
+            background: #2563eb;
+        }
+
+        #accountManagementButton {
+            background: #059669;
+            color: white;
+            display: none;
+        }
+
+        #accountManagementButton:hover {
+            background: #047857;
+        }
+
+        #logoutButton {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        #logoutButton:hover {
+            background: #cbd5e1;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 25px;
+            }
+
+            .logo-section h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo-section">
+        <h1>Core Banking</h1>
+        <p>Secure Banking Management System</p>
+    </div>
+
+    <h2 id="headerLabel">Home Page</h2>
+
+    <div class="menu-buttons">
+
+        <button id="profileButton" onclick="profileButtonClicked()">
+            My Profile
+        </button>
+
+        <button
+            id="accountManagementButton"
+            onclick="accountManagementButtonClicked()">
+            Account Management
+        </button>
+
+        <button id="logoutButton" onclick="logoutButtonClicked()">
+            Logout
+        </button>
+
+    </div>
+
+    <div class="footer-text">
+        Internal Employee Portal
+    </div>
+
+</div>
+
+<script>
+    function setCurrentEmployee(employee) {
+
+        const header =
+            document.getElementById("headerLabel");
+
+        const accountBtn =
+            document.getElementById("accountManagementButton");
+
+        const firstName =
+            employee.first_name || "";
+
+        const lastName =
+            employee.last_name || "";
+
+        header.innerText =
+            "Welcome " + firstName + " " + lastName + "!";
+
+        if (employee.role === "Banker") {
+            accountBtn.style.display = "block";
+        } else {
+            accountBtn.style.display = "none";
+        }
+    }
+
+    function profileButtonClicked() {
+        window.location.href = "/profile";
+    }
+
+    function logoutButtonClicked() {
+
+        localStorage.removeItem("employee");
+
+        window.location.href = "/auth/login";
+    }
+
+    function accountManagementButtonClicked() {
+        window.location.href = "/api/account_management";
+    }
+
+    window.onload = function () {
+
+        let employee = null;
+
+        try {
+
+            employee =
+                JSON.parse(localStorage.getItem("employee"));
+
+        } catch (e) {
+
+            employee = null;
+        }
+
+        if (!employee) {
+            window.location.href = "/auth/login";
+            return;
+        }
+
+        setCurrentEmployee(employee);
+    };
+</script>
+
+</body>
+</html>

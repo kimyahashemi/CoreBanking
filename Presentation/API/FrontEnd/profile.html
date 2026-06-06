@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Page</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background:linear-gradient(135deg, #0f172a, #1e3a8a, #059669);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        .profile-container{
+            width:100%;
+            max-width:450px;
+            background:white;
+            padding:40px 35px;
+            border-radius:20px;
+            box-shadow:0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:35px;
+        }
+
+        .header h2{
+            color:#1e3a8a;
+            font-size:30px;
+            margin-bottom:8px;
+        }
+
+        .header p{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        .profile-card{
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:16px;
+            padding:20px;
+            margin-bottom:25px;
+        }
+
+        .row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid #e2e8f0;
+        }
+
+        .row:last-child{
+            border-bottom:none;
+        }
+
+        .label{
+            font-weight:bold;
+            color:#0f172a;
+        }
+
+        .value{
+            color:#334155;
+            font-weight:500;
+        }
+
+        .button-group{
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+
+        button{
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:all 0.3s ease;
+        }
+
+        button:hover{
+            transform:translateY(-2px);
+        }
+
+        .reset-btn{
+            background:#059669;
+            color:white;
+        }
+
+        .reset-btn:hover{
+            background:#047857;
+        }
+
+        .back-btn{
+            background:#1e3a8a;
+            color:white;
+        }
+
+        .back-btn:hover{
+            background:#2563eb;
+        }
+
+        .footer{
+            margin-top:25px;
+            text-align:center;
+            font-size:13px;
+            color:#64748b;
+        }
+
+        @media (max-width:500px){
+
+            .profile-container{
+                padding:30px 22px;
+            }
+
+            .header h2{
+                font-size:25px;
+            }
+
+            .row{
+                flex-direction:column;
+                align-items:flex-start;
+                gap:6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <div class="header">
+        <h2>Profile Page</h2>
+        <p>Employee Information & Security Settings</p>
+    </div>
+
+    <div class="profile-card">
+
+        <div class="row">
+            <span class="label">Name</span>
+            <span class="value" id="employee_name"></span>
+        </div>
+
+        <div class="row">
+            <span class="label">Role</span>
+            <span class="value" id="employee_role"></span>
+        </div>
+
+        <div class="row">
+            <span class="label">Status</span>
+            <span class="value" id="employee_status"></span>
+        </div>
+
+    </div>
+
+    <div class="button-group">
+        <button class="reset-btn" onclick="resetPassword()">
+            Reset Password
+        </button>
+
+        <button class="back-btn" onclick="goBack()">
+            Back to Home
+        </button>
+    </div>
+
+    <div class="footer">
+        Core Banking Employee Portal
+    </div>
+
+</div>
+
+<script>
+
+function loadProfile(){
+    const employee = JSON.parse(localStorage.getItem("employee"))
+
+    if(!employee){
+        window.location.href = "login.html"
+        return
+    }
+
+    document.getElementById("employee_name").innerText =
+        employee.first_name + " " + employee.last_name
+
+    document.getElementById("employee_role").innerText = employee.role
+    document.getElementById("employee_status").innerText = employee.status
+}
+
+function resetPassword(){
+    const newPassword = prompt("Enter new password")
+
+    if(!newPassword) return
+
+    fetch("/employee/reset-password",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            password:newPassword
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        alert("Password reset successful")
+    })
+    .catch(err=>{
+        alert("Error resetting password")
+    })
+}
+
+function goBack(){
+    window.location.href = "/home"
+}
+
+loadProfile()
+
+</script>
+
+</body>
+</html>

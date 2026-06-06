@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:linear-gradient(135deg,#0f172a,#1e3a8a,#059669);
+            padding:20px;
+        }
+
+        .register-container{
+            width:100%;
+            max-width:450px;
+            background:white;
+            border-radius:22px;
+            padding:40px 35px;
+            box-shadow:0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:30px;
+        }
+
+        .header h2{
+            color:#1e3a8a;
+            font-size:30px;
+            margin-bottom:10px;
+        }
+
+        .header p{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+        }
+
+        label{
+            margin-bottom:8px;
+            font-weight:bold;
+            color:#0f172a;
+        }
+
+        input{
+            width:100%;
+            padding:13px;
+            border:1px solid #cbd5e1;
+            border-radius:12px;
+            font-size:15px;
+            margin-bottom:18px;
+            transition:0.3s ease;
+        }
+
+        input:focus{
+            outline:none;
+            border-color:#2563eb;
+            box-shadow:0 0 0 3px rgba(37,99,235,0.15);
+        }
+
+        .password-row{
+            display:flex;
+            gap:10px;
+            margin-bottom:18px;
+        }
+
+        .password-row input{
+            margin-bottom:0;
+        }
+
+        .small-btn{
+            border:none;
+            background:#e2e8f0;
+            color:#0f172a;
+            padding:0 16px;
+            border-radius:12px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:0.3s ease;
+        }
+
+        .small-btn:hover{
+            background:#cbd5e1;
+        }
+
+        .captcha-box{
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:16px;
+            padding:18px;
+            margin-bottom:20px;
+            text-align:center;
+        }
+
+        #captchaImage{
+            border-radius:10px;
+            border:1px solid #cbd5e1;
+            margin-bottom:15px;
+            max-width:100%;
+        }
+
+        .captcha-actions{
+            display:flex;
+            gap:10px;
+            margin-top:10px;
+        }
+
+        .captcha-actions input{
+            margin-bottom:0;
+        }
+
+        .main-btn{
+            border:none;
+            padding:14px;
+            border-radius:12px;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s ease;
+            margin-top:5px;
+        }
+
+        .main-btn:hover{
+            transform:translateY(-2px);
+        }
+
+        .register-btn{
+            background:#059669;
+            color:white;
+        }
+
+        .register-btn:hover{
+            background:#047857;
+        }
+
+        .back-btn{
+            background:#1e3a8a;
+            color:white;
+            margin-top:14px;
+        }
+
+        .back-btn:hover{
+            background:#2563eb;
+        }
+
+        #result{
+            margin-top:18px;
+            text-align:center;
+            font-weight:bold;
+            color:#dc2626;
+        }
+
+        .footer{
+            text-align:center;
+            margin-top:25px;
+            color:#64748b;
+            font-size:13px;
+        }
+
+        @media(max-width:500px){
+
+            .register-container{
+                padding:30px 22px;
+            }
+
+            .password-row,
+            .captcha-actions{
+                flex-direction:column;
+            }
+
+            .small-btn{
+                padding:12px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <div class="header">
+        <h2>Create Account</h2>
+        <p>Core Banking Employee Registration</p>
+    </div>
+
+    <form id="registerForm">
+
+        <label>First Name</label>
+        <input id="firstName" type="text" required>
+
+        <label>Last Name</label>
+        <input id="lastName" type="text" required>
+
+        <label>Username</label>
+        <input id="username" type="text" required>
+
+        <label>Password</label>
+
+        <div class="password-row">
+
+            <input id="password" type="password" required>
+
+            <button
+                type="button"
+                class="small-btn"
+                onclick="togglePassword(event)">
+                Show
+            </button>
+
+        </div>
+
+        <label>Email</label>
+        <input id="email" type="email" required>
+
+        <!-- CAPTCHA -->
+
+        <div class="captcha-box">
+
+            <img
+                id="captchaImage"
+                src="/auth/captcha"
+                alt="captcha">
+
+            <div class="captcha-actions">
+
+                <input
+                    id="captchaInput"
+                    placeholder="Enter CAPTCHA"
+                    required>
+
+                <button
+                    type="button"
+                    class="small-btn"
+                    onclick="refreshCaptcha()">
+
+                    Refresh
+                </button>
+
+            </div>
+
+        </div>
+
+        <button type="submit" class="main-btn register-btn">
+            Register
+        </button>
+
+        <button
+            type="button"
+            class="main-btn back-btn"
+            onclick="goToLogin()">
+
+            Back To Login
+        </button>
+
+    </form>
+
+    <p id="result"></p>
+
+    <div class="footer">
+        Secure Employee Banking Portal
+    </div>
+
+</div>
+
+<script>
+
+function refreshCaptcha() {
+    const img = document.getElementById("captchaImage");
+    img.src = "/auth/captcha?ts=" + new Date().getTime();
+}
+
+function togglePassword() {
+    const passwordField = document.getElementById("password");
+    const button = event.target;
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        button.textContent = "Hide";
+    } else {
+        passwordField.type = "password";
+        button.textContent = "Show";
+    }
+}
+
+function goToLogin() {
+    window.location.href = "/auth/login";
+}
+
+document.getElementById("registerForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const response = await fetch("/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            first_name: document.getElementById("firstName").value,
+            last_name: document.getElementById("lastName").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            email: document.getElementById("email").value,
+            captcha: document.getElementById("captchaInput").value
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+        document.getElementById("result").innerText =
+            data.detail || "Registration Failed";
+
+        refreshCaptcha();
+        return;
+    }
+
+    alert("Registration Successful");
+
+    // ✅ Go back to login
+    window.location.href = "/auth/login";
+});
+
+// generate captcha on load
+window.onload = refreshCaptcha;
+
+</script>
+
+</body>
+</html>

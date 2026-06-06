@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Transaction Management</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#059669);
+    padding:30px;
+    color:#0f172a;
+}
+
+.page-container{
+    max-width:1200px;
+    margin:auto;
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+}
+
+.page-header{
+    background:linear-gradient(90deg,#1e3a8a,#059669);
+    color:white;
+    padding:25px;
+}
+
+.page-header h1{
+    margin:0;
+    font-size:32px;
+}
+
+.page-content{
+    padding:30px;
+}
+
+.button-row{
+    display:flex;
+    gap:15px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.button-row button,
+.back-container button,
+.modal-buttons button{
+    border:none;
+    padding:13px 18px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+
+.button-row button:hover,
+.back-container button:hover,
+.modal-buttons button:hover{
+    transform:translateY(-2px);
+}
+
+.button-row button:nth-child(1){
+    background:#059669;
+    color:white;
+}
+
+.button-row button:nth-child(1):hover{
+    background:#047857;
+}
+
+.button-row button:nth-child(2){
+    background:#1e3a8a;
+    color:white;
+}
+
+.button-row button:nth-child(2):hover{
+    background:#2563eb;
+}
+
+.button-row button:nth-child(3){
+    background:#0f172a;
+    color:white;
+}
+
+.button-row button:nth-child(3):hover{
+    background:#334155;
+}
+
+.table-container{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    overflow:hidden;
+    border-radius:16px;
+}
+
+thead{
+    background:#1e3a8a;
+    color:white;
+}
+
+th{
+    padding:16px;
+    text-align:center;
+    font-size:15px;
+}
+
+td{
+    padding:15px;
+    text-align:center;
+    border-bottom:1px solid #e2e8f0;
+    color:#334155;
+}
+
+tbody tr{
+    transition:0.2s ease;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+    cursor:pointer;
+}
+
+tbody tr.selected{
+    background:#dbeafe;
+}
+
+#pagination{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:25px;
+    gap:15px;
+}
+
+#pagination button{
+    background:#1e3a8a;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+#pagination button:hover{
+    background:#2563eb;
+}
+
+#pagination button:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+#currentPageLabel{
+    font-weight:bold;
+    color:#0f172a;
+}
+
+.back-container{
+    margin-top:25px;
+}
+
+.back-container button{
+    background:#e2e8f0;
+    color:#0f172a;
+}
+
+.back-container button:hover{
+    background:#cbd5e1;
+}
+
+/* Modal */
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(15,23,42,0.65);
+    backdrop-filter:blur(4px);
+}
+
+.modal-content{
+    background:white;
+    width:90%;
+    max-width:430px;
+    margin:8% auto;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+.modal-content h2{
+    color:#1e3a8a;
+    margin-bottom:20px;
+}
+
+.modal-content label{
+    display:block;
+    margin-top:16px;
+    margin-bottom:7px;
+    font-weight:bold;
+    color:#0f172a;
+}
+
+.modal-content input,
+.modal-content select{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-size:15px;
+    transition:0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content select:focus{
+    border-color:#2563eb;
+    outline:none;
+    box-shadow:0 0 0 3px rgba(37,99,235,0.15);
+}
+
+.modal-buttons{
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.modal-buttons button:first-child{
+    background:#059669;
+    color:white;
+    flex:1;
+}
+
+.modal-buttons button:first-child:hover{
+    background:#047857;
+}
+
+.modal-buttons button:last-child{
+    background:#e2e8f0;
+    color:#0f172a;
+    flex:1;
+}
+
+.modal-buttons button:last-child:hover{
+    background:#cbd5e1;
+}
+
+.footer-note{
+    margin-top:20px;
+    text-align:center;
+    color:#64748b;
+    font-size:13px;
+}
+
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .page-content{
+        padding:20px;
+    }
+
+    .button-row{
+        flex-direction:column;
+    }
+
+    #pagination{
+        flex-direction:column;
+    }
+
+    .modal-content{
+        margin-top:20%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page-container">
+
+<div class="page-header">
+    <h1>Transaction Management</h1>
+</div>
+
+<div class="page-content">
+
+<div class="button-row">
+
+<button onclick="openCreateTransactionModal()">
+    Create
+</button>
+
+</div>
+
+<div class="table-container">
+
+<table id="transactionTable">
+
+<thead>
+<tr>
+    <th>No</th>
+    <th>Amount</th>
+    <th>Transaction Type</th>
+    <th>Insert Date</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+
+</table>
+
+</div>
+
+<div id="pagination">
+
+<button id="previousButton" onclick="previousPage()" disabled>
+    Previous
+</button>
+
+<span id="currentPageLabel">
+    1
+</span>
+
+<button id="nextButton" onclick="nextPage()">
+    Next
+</button>
+
+</div>
+
+<div class="back-container">
+
+<button onclick="goBack()">
+    Back
+</button>
+
+</div>
+
+<div class="footer-note">
+    Core Banking Transaction System
+</div>
+
+</div>
+</div>
+
+<!-- Modal -->
+
+<div id="createTransactionModal" class="modal">
+
+<div class="modal-content">
+
+<h2>Create Transaction</h2>
+
+<label>Amount</label>
+
+<input
+type="number"
+id="transactionAmount"
+min="1"
+step="0.01">
+
+<label>Transaction Type</label>
+
+<select id="transactionType">
+    <option value="1">Deposit</option>
+    <option value="2">Withdraw</option>
+</select>
+
+<div class="modal-buttons">
+
+<button onclick="submitTransaction()">
+    Submit
+</button>
+
+<button onclick="closeCreateTransactionModal()">
+    Cancel
+</button>
+
+</div>
+
+</div>
+</div>
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let transactionsData = []; // Store fetched transactions
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountId = urlParams.get('account_id');
+    window.onload = function () {
+        const stored = localStorage.getItem("employee");
+        if (!stored) {
+            window.location.href = "/auth/login";
+            return;
+        }
+        fetchTransactions();
+    };
+
+    async function fetchTransactions() {
+        if (!accountId) {
+            alert("Account ID is missing!");
+            return;
+        }
+
+        const token = localStorage.getItem("access_token");
+
+        try {
+
+            const response = await fetch(
+                `/api/transaction_management?account_id=${accountId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Token expired
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                window.location.href = "/auth/login";
+                return;
+            }
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                alert(
+                    result.detail ||
+                    result.message ||
+                    "Failed to fetch transactions."
+                );
+                return;
+            }
+
+            transactionsData = result.data;
+
+             currentPage = 1;
+            renderTable();
+            updatePagination();
+
+        } catch (error) {
+
+            console.error("Error fetching transactions:", error);
+
+            alert("An error occurred while connecting to the server.");
+        }
+    }
+
+     function renderTable() {
+
+        const tbody = document.querySelector("#transactionTable tbody");
+
+        tbody.innerHTML = "";
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+
+        const paginatedData = transactionsData.slice(startIndex, endIndex);
+
+        paginatedData.forEach((tx, index) => {
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${startIndex + index + 1}</td>
+                <td>${tx.amount}</td>
+                <td>${tx.transaction_type}</td>
+                <td>${tx.insert_date_time}</td>
+            `;
+
+            tr.dataset.transactionId = tx.id;
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Call fetch on page load
+    document.addEventListener("DOMContentLoaded", fetchTransactions);
+
+    function openCreateTransactionModal() {
+        document.getElementById("createTransactionModal").style.display = "block";
+    }
+
+    function closeCreateTransactionModal() {
+
+        document.getElementById("createTransactionModal").style.display = "none";
+
+        document.getElementById("transactionAmount").value = "";
+        document.getElementById("transactionType").value = "Deposit";
+    }
+
+     function updatePagination() {
+
+        const totalPages = Math.ceil(transactionsData.length / rowsPerPage);
+
+        document.getElementById("currentPageLabel").innerText =
+            `Page ${currentPage} of ${totalPages || 1}`;
+
+        document.getElementById("previousButton").disabled =
+            currentPage === 1;
+
+        document.getElementById("nextButton").disabled =
+            currentPage === totalPages || totalPages === 0;
+    }
+
+    function previousPage() {
+
+        if (currentPage > 1) {
+
+            currentPage--;
+
+            renderTable();
+
+            updatePagination();
+        }
+    }
+
+    function nextPage() {
+
+        const totalPages =
+            Math.ceil(transactionsData.length / rowsPerPage);
+
+        if (currentPage < totalPages) {
+
+            currentPage++;
+
+            renderTable();
+
+            updatePagination();
+        }
+    }
+
+    async function submitTransaction() {
+
+        const amount = parseFloat(
+            document.getElementById("transactionAmount").value
+        );
+
+        const transactionType = parseInt(document.getElementById("transactionType").value);
+
+
+        if (!amount || amount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+
+        const token = localStorage.getItem("access_token");
+
+        try {
+
+            const response = await fetch(
+                "/api/create_transaction",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        transaction_type: transactionType,
+                        account_id: parseInt(accountId)
+                    })
+                }
+            );
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                window.location.href = "/auth/login";
+                return;
+            }
+
+            if (response.ok) {
+
+                alert("Transaction created successfully.");
+
+                closeCreateTransactionModal();
+
+                await fetchTransactions();
+
+            } else {
+
+                const errorData = await response.json();
+
+                alert(
+                    errorData.detail ||
+                    "Failed to create transaction."
+                );
+            }
+
+        } catch (error) {
+
+            console.error("Error creating transaction:", error);
+
+            alert("An error occurred while connecting to the server.");
+        }
+    }
+    function goBack() { window.location.href = "api/account_management"; }
+
+    // Row selection logic
+    document.addEventListener("click", function(event) {
+        const row = event.target.closest("tbody tr");
+        if (!row) return;
+
+        document.querySelectorAll("#transactionTable tbody tr")
+            .forEach(r => r.classList.remove("selected"));
+
+        row.classList.add("selected");
+
+        // Example: Get the selected transaction ID
+        // const selectedId = row.dataset.transactionId;
+    });
+
+</script>
+</body>
+</html>

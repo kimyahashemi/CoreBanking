@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Account Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .row {
+            display: flex;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .row > * {
+            flex: 1;
+        }
+
+        .button-row {
+            display: flex;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #999;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        #pagination {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        #pagination button {
+            padding: 5px 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 400px;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e3a8a;
+            font-size: 34px;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .row {
+            display: flex;
+            margin-top: 15px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .row > * {
+            flex: 1;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            gap: 12px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #f8fafc;
+            outline: none;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+            background: white;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary-btn {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #2563eb;
+        }
+
+        .green-btn {
+            background: #059669;
+            color: white;
+        }
+
+        .green-btn:hover {
+            background: #047857;
+        }
+
+        .gray-btn {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .gray-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .danger-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .danger-btn:hover {
+            background: #b91c1c;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 14px;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(to right, #1e3a8a, #059669);
+            color: white;
+        }
+
+        th {
+            padding: 16px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: 0.2s ease;
+            cursor: pointer;
+        }
+
+        tbody tr:hover {
+            background: #eff6ff;
+        }
+
+        tbody tr.selected {
+            background: #dbeafe;
+            border-left: 5px solid #2563eb;
+        }
+
+        #pagination {
+            margin-top: 25px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #pageLabel {
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .back-btn {
+            margin-top: 25px;
+            width: 150px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 6% auto;
+            padding: 30px;
+            width: 95%;
+            max-width: 500px;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 25px;
+            color: #1e3a8a;
+            text-align: center;
+        }
+
+        label {
+            font-weight: 600;
+            color: #334155;
+            min-width: 140px;
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+
+            .row,
+            .button-row {
+                flex-direction: column;
+            }
+
+            .row > *,
+            .button-row > * {
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .modal-content {
+                margin-top: 15%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <h1>Account Management</h1>
+
+    <div class="row">
+        <input type="text" id="searchBox" placeholder="Search accounts...">
+
+        <button class="green-btn" onclick="openFilterDialog()">Filter</button>
+    </div>
+
+    <div class="button-row">
+        <button class="primary-btn" onclick="createAccount()">
+            Create New Account
+        </button>
+
+        <button class="green-btn" onclick="updateAccount()">
+            Update Account
+        </button>
+
+        <button class="danger-btn" onclick="deactivateAccount()">
+            Deactivate Account
+        </button>
+
+        <button class="gray-btn" onclick="transactionManagement()">
+            Transaction Management
+        </button>
+    </div>
+
+    <table id="accountTable">
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Account Number</th>
+            <th>Account Type</th>
+            <th>Opening Date</th>
+            <th>Balance</th>
+            <th>Customer ID</th>
+        </tr>
+        </thead>
+
+        <tbody></tbody>
+    </table>
+
+    <div id="pagination">
+        <button class="gray-btn" id="prevButton" onclick="prevPage()" disabled>
+            Previous
+        </button>
+
+        <span id="pageLabel">1 / 1</span>
+
+        <button class="primary-btn" id="nextButton" onclick="nextPage()">
+            Next
+        </button>
+    </div>
+
+    <button class="gray-btn back-btn" onclick="goBack()">
+        Back
+    </button>
+
+</div>
+
+<!-- CREATE MODAL -->
+
+<div id="createAccountModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Create New Account</h2>
+
+        <div class="row">
+            <label>Account Number</label>
+            <input type="text" id="accountNumber" readonly>
+        </div>
+
+        <div class="row">
+            <label>Account Type</label>
+
+            <select id="accountType">
+                <option value="">Select</option>
+                <option value="1">Debit</option>
+                <option value="2">Credit</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label>Customer National Code</label>
+
+            <input type="text" id="customerNationalCode">
+
+            <button class="green-btn" onclick="searchCustomer()">
+                Search
+            </button>
+        </div>
+
+        <div class="row">
+            <label id="customerName">
+                Customer: Not selected
+            </label>
+        </div>
+
+        <div id="statusMessage"></div>
+
+        <div class="button-row">
+            <button class="primary-btn" onclick="submitCreateAccount()">
+                Create
+            </button>
+
+            <button class="gray-btn" onclick="closeCreateAccount()">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- UPDATE MODAL -->
+
+<div id="updateAccountModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Update Account</h2>
+
+        <input type="hidden" id="updateAccountId">
+
+        <div class="row">
+            <label>Account Number</label>
+            <input type="text" id="updateAccountNumber" readonly>
+        </div>
+
+        <div class="row">
+            <label>Opening Date</label>
+            <input type="text" id="updateOpeningDate" readonly>
+        </div>
+
+        <div class="row">
+            <label>Balance</label>
+            <input type="text" id="updateBalance" readonly>
+        </div>
+
+        <div class="row">
+            <label>Account Type</label>
+
+            <select id="updateAccountType">
+                <option value="1">Debit</option>
+                <option value="2">Credit</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label>Customer ID</label>
+            <input type="number" id="updateCustomerId">
+        </div>
+
+        <div class="button-row">
+            <button class="primary-btn" onclick="submitUpdateAccount()">
+                Update
+            </button>
+
+            <button class="gray-btn" onclick="closeUpdateAccount()">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+
+</div>
+<div id="filterAccountModal" class="modal">
+    <div class="modal-content">
+        <h2>Filter Accounts</h2>
+
+        <div class="row">
+            <label>Account Type</label>
+            <select id="filterAccountType">
+                <option value="">All</option>
+                <option value="Debit">Debit</option>
+                <option value="Credit">Credit</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label>Min Balance</label>
+            <input type="number" id="filterMinBalance" placeholder="e.g. 0">
+        </div>
+
+        <div class="row">
+            <label>Max Balance</label>
+            <input type="number" id="filterMaxBalance" placeholder="e.g. 50000">
+        </div>
+
+        <div class="button-row">
+            <button class="primary-btn" onclick="submitFilter()">
+                Apply Filters
+            </button>
+            <button class="danger-btn" onclick="clearFilters()">
+                Clear Filters
+            </button>
+            <button class="gray-btn" onclick="closeFilterDialog()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    let selectedCustomerId = null;
+    let currentEmployee = null;
+    let currentPage = 1;
+    let totalPages = 1;
+
+    let activeFilters = {
+        account_type: null,
+        min_balance: null,
+        max_balance: null
+    };
+
+    let searchTerm = "";
+
+    window.onload = function () {
+        const stored = localStorage.getItem("employee");
+        if (!stored) {
+            window.location.href = "/auth/login";
+            return;
+        }
+        loadAccounts(searchTerm, currentPage);};
+
+    async function loadAccounts(term = "", pageNumber = 1, pageSize = 10) {
+        currentPage = pageNumber;
+
+        const token = localStorage.getItem("access_token");
+        const url = `/api/accounts?term=${term}&page_number=${pageNumber}&page_size=${pageSize}`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            window.location.href = "/auth/login";
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.detail ? JSON.stringify(data.detail) : "An error occurred");
+            return;
+        }
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        const accounts = data.data.account_list;
+        const totalCount = data.data.total_count;
+
+        totalPages = Math.ceil(totalCount / 10);
+
+        document.getElementById("pageLabel").innerText =
+            `${pageNumber} / ${totalPages}`;
+
+        fillTable(accounts);
+
+        document.getElementById("prevButton").disabled = currentPage === 1;
+        document.getElementById("nextButton").disabled = currentPage === totalPages;
+    }
+
+
+    function fillTable(accounts) {
+        const tbody = document.querySelector("#accountTable tbody");
+        tbody.innerHTML = "";
+
+        let i = 1;
+        accounts.forEach(acc => {
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", acc.account_id);
+
+            row.innerHTML = `
+                <td>${i}</td>
+                <td>${acc.account_number}</td>
+                <td>${acc.account_type}</td>
+                <td>${acc.opening_date}</td>
+                <td>${acc.balance}</td>
+                <td>${acc.customer_id}</td>
+            `;
+            tbody.appendChild(row);
+            i++;
+        });
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadAccounts(searchTerm, currentPage);
+        }
+    }
+
+
+    function nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadAccounts(searchTerm, currentPage);}}
+
+
+    function getSelectedAccountId() {
+        const selected = document.querySelector("tr.selected");
+        if (!selected) return null;
+        return parseInt(selected.getAttribute("data-id"));
+    }
+
+    // Row selection
+    document.addEventListener("click", function (event) {
+        if (event.target.closest("tbody tr")) {
+            document.querySelectorAll("tbody tr").forEach(row => row.classList.remove("selected"));
+            event.target.closest("tr").classList.add("selected");
+        }
+    });
+
+    // Open the modal and load the number automatically
+    function createAccount() {
+        document.getElementById("createAccountModal").style.display = "block";
+        loadAccounts(searchTerm, currentPage);
+    }
+
+    async function loadAccountNumber() {
+        try {
+            const response = await fetch('/api/accounts/generate_number');
+            if (!response.ok) throw new Error('Failed to generate account number.');
+
+            const data = await response.json();
+            // ID matches HTML: accountNumber
+            document.getElementById('accountNumber').value = data.account_number;
+        } catch (error) {
+            console.error(error);
+            updateStatus(error.message, 'error');
+        }
+    }
+
+    async function submitCreateAccount() {
+        // IDs match HTML: accountNumber and accountType
+        const accountNumber = document.getElementById('accountNumber').value;
+        const accountTypeId = document.getElementById('accountType').value;
+
+        if (!selectedCustomerId) {
+            updateStatus('Please search for and select a valid customer first.', 'error');
+            return;
+        }
+        if (!accountTypeId) {
+            updateStatus('Please select an account type.', 'error');
+            return;
+        }
+
+        updateStatus('Creating account...', '');
+
+        try {
+            const response = await fetch('/api/accounts/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    account_number: accountNumber,
+                    account_type_id: parseInt(accountTypeId),
+                    customer_id: selectedCustomerId
+                })
+            });
+
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.detail || 'Creation failed');
+
+            updateStatus(`Success! Account created.`, 'success');
+            setTimeout(closeCreateAccount, 1000);
+            loadAccounts(searchTerm, currentPage);
+            loadAccountNumber();
+        } catch (error) {
+            updateStatus(`Error: ${error.message}`, 'error');
+        }
+    }
+
+    function updateStatus(message, type) {
+        const statusDiv = document.getElementById('statusMessage');
+        statusDiv.textContent = message;
+        statusDiv.style.color = type === 'error' ? 'red' : 'green';}
+
+    document.addEventListener('DOMContentLoaded', loadAccountNumber);
+    async function searchCustomer() {
+        const nationalCode = document.getElementById("customerNationalCode").value;
+        if (!nationalCode) {
+            alert("Please enter national code");
+            return;
+        }
+        try {
+            const url = `/api/accounts/get_customer?customer_national_code=${encodeURIComponent(nationalCode)}`;
+            const response = await fetch(url);
+
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || "Customer not found");
+                return;
+            }
+
+            const customer = data.customer;
+
+            document.getElementById("customerName").innerText =
+                `Customer: ${customer.customer_first_name} ${customer.customer_last_name}`;
+
+            selectedCustomerId = customer.customer_id;
+
+        } catch (err) {
+            console.error(err);
+            alert("Error connecting to server");
+        }}
+
+    function closeCreateAccount() {
+        document.getElementById("createAccountModal").style.display = "none";}
+
+    function updateAccount() {
+        const selected = document.querySelector("tr.selected");
+
+        if (!selected) {
+            alert("Please select an account first.");
+            return;
+        }
+
+        const cells = selected.querySelectorAll("td");
+
+        const accountId = selected.getAttribute("data-id");
+        const accountNumber = cells[1].innerText;
+        const accountType = cells[2].innerText;
+        const openingDate = cells[3].innerText;
+        const balance = cells[4].innerText;
+        const customerId = cells[5].innerText;
+
+        document.getElementById("updateAccountId").value = accountId;
+        document.getElementById("updateAccountNumber").value = accountNumber;
+        document.getElementById("updateOpeningDate").value = openingDate;
+        document.getElementById("updateBalance").value = balance;
+        document.getElementById("updateCustomerId").value = customerId;
+
+        if (accountType === "Debit") {
+            document.getElementById("updateAccountType").value = 1;
+        } else {
+            document.getElementById("updateAccountType").value = 2;
+        }
+
+        document.getElementById("updateAccountModal").style.display = "block";}
+
+
+    async function submitUpdateAccount() {
+
+        const accountData = {
+            id: parseInt(document.getElementById("updateAccountId").value),
+
+            account_number:
+                document.getElementById("updateAccountNumber").value,
+
+            account_type_id:
+                parseInt(document.getElementById("updateAccountType").value),
+
+            opening_date:
+                document.getElementById("updateOpeningDate").value,
+
+            balance:
+                parseFloat(document.getElementById("updateBalance").value),
+
+            is_active: true,
+
+            customer_id:
+                parseInt(document.getElementById("updateCustomerId").value)
+        };
+
+        try {
+
+            const response = await fetch("/api/accounts/update", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(accountData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || "Update failed.");
+                return;
+            }
+
+            alert("Account updated successfully.");
+
+            closeUpdateAccount();
+
+            loadAccounts(searchTerm, currentPage);
+
+        } catch (error) {
+
+            console.error(error);
+            alert("Error updating account.");
+        }
+    }
+
+    function closeUpdateAccount() {
+        document.getElementById("updateAccountModal").style.display = "none";
+    }
+
+
+    async function deactivateAccount() {
+
+        const selected = document.querySelector("tr.selected");
+
+        if (!selected) {
+            alert("Please select an account");
+            return;
+        }
+
+        const accountId = parseInt(selected.getAttribute("data-id"));
+
+        const accountNumber =
+            selected.querySelectorAll("td")[1].innerText;
+
+        const confirmDeactivate = confirm(
+            `Are you sure you want to deactivate account ${accountNumber}?`
+        );
+
+        if (!confirmDeactivate) {
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/accounts/deactivate", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: accountId
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || "Failed to deactivate account.");
+                return;
+            }
+
+            alert(data.message);
+
+            loadAccounts(searchTerm, currentPage);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Error connecting to server.");
+        }
+    }
+
+
+    function transactionManagement() {
+        const id = getSelectedAccountId();
+        if (!id) {
+            alert("Please select an account");
+            return;
+        }
+
+        window.location.href = `/transaction_management?account_id=${id}`;;}
+
+    document.getElementById("searchBox").addEventListener("input", function() {
+        const searchTerm = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll("#accountTable tbody tr");
+
+        tableRows.forEach(row => {
+            // Get all text content from the row's cells
+            const rowText = row.textContent.toLowerCase();
+
+            // Toggle visibility based on whether the row contains the search term
+            if (rowText.includes(searchTerm)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    function openFilterDialog() {
+        document.getElementById("filterAccountModal").style.display = "block";
+    }
+
+    function closeFilterDialog() {
+        document.getElementById("filterAccountModal").style.display = "none";
+    }
+
+    function submitFilter() {
+        const type = document.getElementById("filterAccountType").value;
+        const min = document.getElementById("filterMinBalance").value;
+        const max = document.getElementById("filterMaxBalance").value;
+
+        activeFilters = {
+            account_type: type || null,
+            min_balance: min ? parseFloat(min) : null,
+            max_balance: max ? parseFloat(max) : null,
+        };
+
+        closeFilterDialog();
+        applyFiltersAndSearch();
+    }
+
+    function clearFilters() {
+        // Reset inputs
+        document.getElementById("filterAccountType").value = "";
+        document.getElementById("filterMinBalance").value = "";
+        document.getElementById("filterMaxBalance").value = "";
+
+        // Reset filter object
+        activeFilters = {
+            account_type: null,
+            min_balance: null,
+            max_balance: null
+        };
+
+        closeFilterDialog();
+
+        // Reload standard un-filtered data
+        const currentSearchTerm = document.getElementById("searchBox").value.toLowerCase();
+        loadAccounts(currentSearchTerm, 1);
+    }
+
+
+    async function applyFiltersAndSearch() {
+        const f = activeFilters;
+
+        const url = `/api/accounts/filter?type=${f.account_type || ""}&min=${f.min_balance || ""}&max=${f.max_balance || ""}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        let accounts = data.data.account_list;
+
+        if (searchTerm) {
+            accounts = accounts.filter(acc =>
+                acc.account_number.toString().toLowerCase().includes(searchTerm) ||
+                acc.account_type.toLowerCase().includes(searchTerm) ||
+                acc.opening_date.toLowerCase().includes(searchTerm) ||
+                acc.balance.toString().toLowerCase().includes(searchTerm)
+            );
+        }
+
+        fillTable(accounts);
+    }
+
+    function goBack() {
+        window.location.href = "/home";
+    }
+</script>
+
+</body>
+</html>
